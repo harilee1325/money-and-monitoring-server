@@ -54,8 +54,9 @@ public class ProductDao {
         }
     }
 
-    public List<Purchase> getPurchase() {
-        return (List<Purchase>) conn.getEntityManager().createQuery("from Purchase").getResultList();
+    public List<Purchase> getPurchase(int id) {
+        return (List<Purchase>) conn.getEntityManager().createQuery("from Products where user_id=:user_id")
+                .setParameter("user_id", id).getResultList();
 
     }
 }

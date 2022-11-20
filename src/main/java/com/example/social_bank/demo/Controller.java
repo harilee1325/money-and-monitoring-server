@@ -184,18 +184,18 @@ public class Controller {
         }
     }
 
-    @GetMapping("/all_transaction")
-    public ResponseEntity getAllTransactions() {
+    @GetMapping("/all_transaction/{user_id}")
+    public ResponseEntity getAllTransactions(@PathVariable("user_id") int userId) {
         try{
-            List<Purchase> products = productDao.getPurchase();
+            List<Purchase> products = productDao.getPurchase(userId);
             return new ResponseEntity(products, HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);
         }
     }
 
-    @GetMapping("/get_transaction/{user_id}")
-    public ResponseEntity getSpecificTransaction(@PathVariable("user_id") int id) {
+    @GetMapping("/get_account/{user_id}")
+    public ResponseEntity getSpecificAccount(@PathVariable("user_id") int id) {
         try{
 
             Accounts acc = services.getAccounts(Integer.parseInt(String.valueOf(id)));
@@ -238,6 +238,9 @@ public class Controller {
                 Purchase purchase = new Purchase();
                 purchase.setProduct_id(purchaseView.getProductId());
                 purchase.setUser_id(purchaseView.getUserId());
+                purchase.setPayment_type(purchaseView.getPaymentType());
+                purchase.setProduct_price(String.valueOf(finalPrice));
+                purchase.setSavings_amount(String.valueOf(savingsBalance));
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();
 
@@ -259,8 +262,11 @@ public class Controller {
             accounts.setSavings_balance(acc.getSavings_balance());
             if (services.updateAccount(acc.getId(), accounts)) {
                 Purchase purchase = new Purchase();
-                purchase.setProduct_id(purchase.getProduct_id());
-                purchase.setUser_id(purchase.getUser_id());
+                purchase.setProduct_id(purchaseView.getProductId());
+                purchase.setUser_id(purchaseView.getUserId());
+                purchase.setPayment_type(purchaseView.getPaymentType());
+                purchase.setProduct_price(String.valueOf(finalPrice));
+                purchase.setSavings_amount(String.valueOf(savingsBalance));
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();
 
