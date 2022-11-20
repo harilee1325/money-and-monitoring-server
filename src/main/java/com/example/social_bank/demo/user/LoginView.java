@@ -5,6 +5,7 @@ public class LoginView {
     private String email;
     private String password;
 
+
     public LoginView(String email, String password) {
         this.email = email;
         this.password = password;

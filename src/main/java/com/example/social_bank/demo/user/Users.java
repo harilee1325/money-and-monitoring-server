@@ -14,14 +14,37 @@ public class Users {
     @Column(unique = true)
     private String email;
 
+    @Column
+    private String mobile_number;
+
+    @Column
+    private String username;
+
+    public String getMobile_number() {
+        return mobile_number;
+    }
+
+    public void setMobile_number(String mobile_number) {
+        this.mobile_number = mobile_number;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public Users() {
     }
 
-    public Users(String name, String email, String password) {
+    public Users(String name, String email, String password, String mobile_number) {
         super();
         this.name = name;
         this.email = email;
         this.password = password;
+        this.mobile_number = mobile_number;
     }
 
     private String password;
@@ -32,6 +55,14 @@ public class Users {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getMobileNumber(String mobile_number) {
+        return mobile_number;
+    }
+
+    public void setMobileNumber(String mobile_number) {
+        this.mobile_number = mobile_number;
     }
 
     public String getName() {

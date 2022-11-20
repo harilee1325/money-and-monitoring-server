@@ -3,6 +3,10 @@ package com.example.social_bank.demo;
 
 import com.example.social_bank.demo.account.AccountView;
 import com.example.social_bank.demo.account.Accounts;
+import com.example.social_bank.demo.investment.InvestmentDao;
+import com.example.social_bank.demo.investment.InvestmentDetails;
+import com.example.social_bank.demo.investment.InvestmentTypes;
+import com.example.social_bank.demo.investment.InvestmentView;
 import com.example.social_bank.demo.products.*;
 import com.example.social_bank.demo.user.LoginView;
 import com.example.social_bank.demo.user.UserDao;
@@ -16,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,11 +43,17 @@ public class Controller {
     @Autowired
     ProductDao productDao;
 
+
+    @Autowired
+    InvestmentDao investmentDao;
+
     @GetMapping("/add")
     public String add(){
         return "success";
 
     }
+
+    @CrossOrigin(origins = "http://localhost:3001")
 
 
     @PostMapping("/create")
@@ -50,11 +63,48 @@ public class Controller {
         emp.setEmail(userView.getEmail());
         emp.setName(userView.getName());
         emp.setPassword(userView.getPassword());// hashing in dao
+        emp.setMobileNumber(userView.getMobileNumber());
+        emp.setUsername(userView.getUsername());
         if (services.createEmployee(emp)) {
             return "redirect:create?success=true";
         }
         return "redirect:create?error=true";
     }
+
+    @CrossOrigin(origins = "http://localhost:3001")
+
+    @PostMapping("/create_investment")
+    public String createInvestment(@RequestBody InvestmentView investmentView) {
+        logger.info("Creating investment {}", investmentView.getAmount());
+        InvestmentDetails investmentDetails = new InvestmentDetails();
+        investmentDetails.setAmount(investmentView.getAmount());
+        investmentDetails.setType(investmentView.getType());
+        investmentDetails.setUser_id(investmentView.getUserId());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        String date = dtf.format(now);
+        investmentDetails.setDate(date);
+        Accounts acc = services.getAccounts(Integer.parseInt(investmentView.getUserId()));
+
+        Accounts accounts = new Accounts();
+        accounts.setUserId(Integer.parseInt((investmentView.getUserId())));
+        accounts.setSavingsBalance(acc.getSavings_balance() - Double.parseDouble(investmentView.getAmount()));
+        accounts.setDebit_card_number(acc.getDebit_card_number());
+        accounts.setBalance(acc.getBalance());
+        accounts.setWallet(acc.getWallet());
+
+
+
+        if (services.createInvestment(investmentDetails)) {
+            if (services.updateAccount(acc.getId(), accounts)) {
+                return "redirect:create?success=true";
+            }
+            return "redirect:create?error=true";
+        }
+        return "redirect:create?error=true";
+    }
+
 
     @PostMapping("/create_account")
     public String createAccount(@RequestBody AccountView accountView) {
@@ -64,6 +114,7 @@ public class Controller {
         Accounts acc = services.getAccounts(Integer.parseInt(accountView.getUserId()));
         Accounts accounts = new Accounts();
         accounts.setUserId(Integer.parseInt((accountView.getUserId())));
+        accounts.setDebit_card_number(Integer.parseInt((accountView.getDebitCard())));
 
         if (acc!=null){
             accounts.setBalance(acc.getBalance()+Double.parseDouble(accountView.getBalance()));
@@ -83,11 +134,15 @@ public class Controller {
         return "redirect:create?error=true";
     }
 
+
+
+
+    @CrossOrigin(origins = "http://localhost:3001")
     @PostMapping("/login")
     public ResponseEntity loginUser(@RequestBody LoginView loginView) {
         Users user = services.login(loginView.getEmail(), loginView.getPassword());
         if (user!=null){
-            return new ResponseEntity(new UserView(user.getEmail(), user.getName()), HttpStatus.OK);
+            return new ResponseEntity(new UserView(user.getEmail(), user.getName(), user.getId(), user.getUsername()), HttpStatus.OK);
         }
         return new ResponseEntity(new ErrorView("Cannot validate user"), HttpStatus.FORBIDDEN);
 
@@ -105,10 +160,24 @@ public class Controller {
         return "redirect:create?error=true";
     }
 
+
+    @CrossOrigin(origins = "http://localhost:3001")
     @GetMapping("/all")
     public ResponseEntity getAllProducts() {
         try{
             List<Products> products = productDao.getAllEmployees();
+            return new ResponseEntity(products, HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    @CrossOrigin(origins = "http://localhost:3001")
+    @GetMapping("/all_investments")
+    public ResponseEntity getAllInvestmentTypes() {
+        try{
+            List<InvestmentTypes> products = services.getInvestments();
             return new ResponseEntity(products, HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);
@@ -125,6 +194,7 @@ public class Controller {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3001")
     @PostMapping("/purchase_product")
     public String makePurchase(@RequestBody PurchaseView purchaseView) {
 
@@ -140,6 +210,7 @@ public class Controller {
         logger.error("balance savings "+ savingsBalance);
 
         Accounts acc = services.getAccounts(Integer.parseInt(purchaseView.getUserId()));
+
         Accounts accounts = new Accounts();
         accounts.setUserId(Integer.parseInt((purchaseView.getUserId())));
 
@@ -155,6 +226,12 @@ public class Controller {
                 Purchase purchase = new Purchase();
                 purchase.setProduct_id(purchaseView.getProductId());
                 purchase.setUser_id(purchaseView.getUserId());
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+
+                String date = dtf.format(now);
+                purchase.setDate(date);
+
                 if (services.makePurchase(purchase)) {
                     return "redirect:create?success=true";
                 }
@@ -172,6 +249,11 @@ public class Controller {
                 Purchase purchase = new Purchase();
                 purchase.setProduct_id(purchase.getProduct_id());
                 purchase.setUser_id(purchase.getUser_id());
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+
+                String date = dtf.format(now);
+                purchase.setDate(date);
                 if (services.makePurchase(purchase)) {
                     return "redirect:create?success=true";
                 }

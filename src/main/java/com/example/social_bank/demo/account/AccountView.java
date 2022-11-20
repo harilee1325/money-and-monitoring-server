@@ -9,6 +9,16 @@ public class AccountView {
 
     private String userId;
 
+    public String getDebitCard() {
+        return debitCard;
+    }
+
+    public void setDebitCard(String debitCard) {
+        this.debitCard = debitCard;
+    }
+
+    private String debitCard;
+
     public AccountView(String balance, String wallet, String savings, String userId) {
         this.balance = balance;
         this.wallet = wallet;

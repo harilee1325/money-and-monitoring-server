@@ -2,6 +2,9 @@ package com.example.social_bank.demo;
 
 import com.example.social_bank.demo.account.Accounts;
 import com.example.social_bank.demo.account.AccountsDao;
+import com.example.social_bank.demo.investment.InvestmentDao;
+import com.example.social_bank.demo.investment.InvestmentDetails;
+import com.example.social_bank.demo.investment.InvestmentTypes;
 import com.example.social_bank.demo.products.ProductDao;
 import com.example.social_bank.demo.products.Products;
 import com.example.social_bank.demo.products.Purchase;
@@ -32,6 +35,9 @@ public class Services {
 
     @Autowired
     ProductDao productDao;
+
+    @Autowired
+    InvestmentDao investmentDao;
     
     public boolean createEmployee(Users e) {
         try {
@@ -66,7 +72,9 @@ public class Services {
         }
         return null;
     }
-
+    public List<InvestmentTypes>  getInvestments() {
+        return investmentDao.getInvestmentTypes();
+    }
     public Accounts getAccounts(int id) {
         return accountsDao.getAccount(id);
     }
@@ -107,6 +115,17 @@ public class Services {
 
         try {
             productDao.makePurchase(purchase);
+            return true;
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean createInvestment(InvestmentDetails accounts) {
+        try {
+            investmentDao.createInvestment(accounts);
             return true;
         } catch (Exception ex) {
             logger.error(ex.getLocalizedMessage());

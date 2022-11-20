@@ -23,7 +23,6 @@ public class Products {
     @Column
     private String product_price;
 
-
     public Products() {
     }
 
