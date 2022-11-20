@@ -187,7 +187,7 @@ public class Controller {
     @GetMapping("/all_transaction/{user_id}")
     public ResponseEntity getAllTransactions(@PathVariable("user_id") int userId) {
         try{
-            List<Purchase> products = productDao.getPurchase(userId);
+            List<Purchase> products = services.getAllTransaction(userId);
             return new ResponseEntity(products, HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);
@@ -198,9 +198,9 @@ public class Controller {
     public ResponseEntity getSpecificAccount(@PathVariable("user_id") int id) {
         try{
 
-            Accounts acc = services.getAccounts(Integer.parseInt(String.valueOf(id)));
+            Accounts acc = services.getAccounts((id));
 
-            return new ResponseEntity(new AccountView(String.valueOf(acc.getBalance()), String.valueOf(acc.getWallet()), String.valueOf(acc.getSavings_balance()), String.valueOf(acc.getUser_id())), HttpStatus.OK);
+            return new ResponseEntity(new AccountView(String.valueOf(acc.getBalance()), String.valueOf(acc.getWallet()), String.valueOf(acc.getSavings_balance()), String.valueOf(acc.getUser_id()), String.valueOf(acc.getDebit_card_number())), HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);
         }

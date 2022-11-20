@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component("productDao")
@@ -54,9 +55,17 @@ public class ProductDao {
         }
     }
 
-    public List<Purchase> getPurchase(int id) {
-        return (List<Purchase>) conn.getEntityManager().createQuery("from Products where user_id=:user_id")
-                .setParameter("user_id", id).getResultList();
+    public List<Purchase> getPurchase(int user_id) {
+        List<Purchase> purchases =  (List<Purchase>) conn.getEntityManager()
+                .createQuery("from Purchase").getResultList();
 
+
+        List<Purchase> dummyP = new ArrayList<>();
+        for (int i =0;i<purchases.size(); i++){
+            if (Integer.parseInt(purchases.get(i).getUser_id()) == user_id){
+               dummyP.add(purchases.get(i));
+            }
+        }
+        return dummyP;
     }
 }

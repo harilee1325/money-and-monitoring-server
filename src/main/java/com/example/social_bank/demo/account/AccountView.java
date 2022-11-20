@@ -19,11 +19,12 @@ public class AccountView {
 
     private String debitCard;
 
-    public AccountView(String balance, String wallet, String savings, String userId) {
+    public AccountView(String balance, String wallet, String savings, String userId, String debitCard) {
         this.balance = balance;
         this.wallet = wallet;
         this.savings = savings;
         this.userId = userId;
+        this.debitCard = debitCard;
     }
 
     public AccountView() {

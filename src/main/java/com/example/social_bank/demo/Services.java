@@ -137,5 +137,9 @@ public class Services {
     public Products getProducts(int id) {
         return productDao.getProducts(id);
     }
+
+    public List<Purchase> getAllTransaction(int userId) {
+       return productDao.getPurchase(userId);
+    }
 }
 
