@@ -235,14 +235,14 @@ public class Controller {
         Accounts accounts = new Accounts();
         accounts.setUser_id(Integer.parseInt((purchaseView.getUserId())));
         accounts.setDebit_card_number(acc.getDebit_card_number());
-        accounts.setBalance(acc.getBalance()-finalPrice);
-        accounts.setWallet(acc.getWallet());
-        accounts.setSavings_balance(acc.getSavings_balance()+savingsBalance);
+
         if (Objects.equals(purchaseView.getPaymentType(), "1")){
 
             logger.error("payment type 1");
 
-
+            accounts.setBalance(acc.getBalance()-finalPrice);
+            accounts.setWallet(acc.getWallet());
+            accounts.setSavings_balance(acc.getSavings_balance()+savingsBalance);
 
             if (services.updateAccount(acc.getId(), accounts)) {
                 Purchase purchase = new Purchase();
@@ -266,7 +266,9 @@ public class Controller {
         }else{
 
             logger.error("payment type 2");
-
+            accounts.setBalance(acc.getBalance());
+            accounts.setWallet(acc.getWallet()-finalPrice);
+            accounts.setSavings_balance(acc.getSavings_balance());
 
             if (services.updateAccount(acc.getId(), accounts)) {
                 Purchase purchase = new Purchase();
