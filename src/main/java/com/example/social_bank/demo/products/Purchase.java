@@ -38,6 +38,7 @@ public class Purchase {
     @Column
     private String savings_amount;
 
+
     public Purchase(String product_id, String user_id, String date, String payment_type, String product_price, String savings_amount) {
        super();
         this.product_id = product_id;

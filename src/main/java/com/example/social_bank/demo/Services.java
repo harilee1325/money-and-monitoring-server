@@ -3,8 +3,8 @@ package com.example.social_bank.demo;
 import com.example.social_bank.demo.account.Accounts;
 import com.example.social_bank.demo.account.AccountsDao;
 import com.example.social_bank.demo.investment.InvestmentDao;
-import com.example.social_bank.demo.investment.InvestmentDetails;
-import com.example.social_bank.demo.investment.InvestmentTypes;
+import com.example.social_bank.demo.investment.Investment_Details;
+import com.example.social_bank.demo.investment.Investment_Types;
 import com.example.social_bank.demo.products.ProductDao;
 import com.example.social_bank.demo.products.Products;
 import com.example.social_bank.demo.products.Purchase;
@@ -72,7 +72,7 @@ public class Services {
         }
         return null;
     }
-    public List<InvestmentTypes>  getInvestments() {
+    public List<Investment_Types>  getInvestments() {
         return investmentDao.getInvestmentTypes();
     }
     public Accounts getAccounts(int id) {
@@ -123,7 +123,7 @@ public class Services {
         }
     }
 
-    public boolean createInvestment(InvestmentDetails accounts) {
+    public boolean createInvestment(Investment_Details accounts) {
         try {
             investmentDao.createInvestment(accounts);
             return true;
@@ -140,6 +140,10 @@ public class Services {
 
     public List<Purchase> getAllTransaction(int userId) {
        return productDao.getPurchase(userId);
+    }
+
+    public List<Investment_Details> getInvestments(int userId) {
+        return investmentDao.getInvestments(userId);
     }
 }
 

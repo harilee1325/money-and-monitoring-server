@@ -4,8 +4,8 @@ package com.example.social_bank.demo;
 import com.example.social_bank.demo.account.AccountView;
 import com.example.social_bank.demo.account.Accounts;
 import com.example.social_bank.demo.investment.InvestmentDao;
-import com.example.social_bank.demo.investment.InvestmentDetails;
-import com.example.social_bank.demo.investment.InvestmentTypes;
+import com.example.social_bank.demo.investment.Investment_Details;
+import com.example.social_bank.demo.investment.Investment_Types;
 import com.example.social_bank.demo.investment.InvestmentView;
 import com.example.social_bank.demo.products.*;
 import com.example.social_bank.demo.user.LoginView;
@@ -22,12 +22,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import static java.lang.Math.ceil;
-import static java.lang.Math.log;
 
 @org.springframework.stereotype.Controller
 @RestController
@@ -76,7 +74,7 @@ public class Controller {
     @PostMapping("/create_investment")
     public String createInvestment(@RequestBody InvestmentView investmentView) {
         logger.info("Creating investment {}", investmentView.getAmount());
-        InvestmentDetails investmentDetails = new InvestmentDetails();
+        Investment_Details investmentDetails = new Investment_Details();
         investmentDetails.setAmount(investmentView.getAmount());
         investmentDetails.setType(investmentView.getType());
         investmentDetails.setUser_id(investmentView.getUserId());
@@ -177,7 +175,18 @@ public class Controller {
     @GetMapping("/all_investments")
     public ResponseEntity getAllInvestmentTypes() {
         try{
-            List<InvestmentTypes> products = services.getInvestments();
+            List<Investment_Types> products = services.getInvestments();
+            return new ResponseEntity(products, HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3001")
+    @GetMapping("/investments/{user_id}")
+    public ResponseEntity getInvestments(@PathVariable("user_id") int userId) {
+        try{
+            List<Investment_Details> products = services.getInvestments(userId);
             return new ResponseEntity(products, HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);

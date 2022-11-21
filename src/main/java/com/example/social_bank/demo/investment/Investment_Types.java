@@ -4,7 +4,7 @@ package com.example.social_bank.demo.investment;
 import javax.persistence.*;
 
 @Entity
-public class InvestmentTypes {
+public class Investment_Types {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
