@@ -14,6 +14,7 @@ import com.example.social_bank.demo.user.UserDao;
 import com.example.social_bank.demo.user.UserView;
 import com.example.social_bank.demo.user.Users;
 import com.example.social_bank.demo.util.ErrorView;
+import com.example.social_bank.demo.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,11 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.lang.Math.ceil;
+import static java.lang.Math.round;
 
 @org.springframework.stereotype.Controller
 @RestController
-@RequestMapping(path = "/social")
+@RequestMapping(path = "/api")
 public class Controller {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -56,7 +58,7 @@ public class Controller {
 
 
     @PostMapping("/create")
-    public String createEmployeePost(@RequestBody UserView userView) {
+    public ResponseEntity createEmployeePost(@RequestBody UserView userView) {
         logger.info("Creating user {}", userView.getName());
         Users emp = new Users();
         emp.setEmail(userView.getEmail());
@@ -64,10 +66,21 @@ public class Controller {
         emp.setPassword(userView.getPassword());// hashing in dao
         emp.setMobileNumber(userView.getMobileNumber());
         emp.setUsername(userView.getUsername());
-        if (services.createEmployee(emp)) {
-            return "redirect:create?success=true";
+        Accounts accounts = services.getAccountFromCard(userView.getCreditCard());
+
+        if (accounts!=null){
+            if (services.createEmployee(emp)) {
+                Users users = services.getUser(userView.getEmail());
+                services.updateUserId(users.getId(), userView.getCreditCard() );
+                return new ResponseEntity(new ErrorView("Account updated"), HttpStatus.CREATED);
+            }
+        }else{
+            if (services.createEmployee(emp)) {
+                return new ResponseEntity(new ErrorView("Success"), HttpStatus.CREATED);
+            }
         }
-        return "redirect:create?error=true";
+
+        return new ResponseEntity(new ErrorView("Error"), HttpStatus.UNAUTHORIZED);
     }
 
     @CrossOrigin(origins = "http://localhost:3001")
@@ -88,7 +101,7 @@ public class Controller {
 
         Accounts accounts = new Accounts();
         accounts.setUser_id(Integer.parseInt((investmentView.getUserId())));
-        accounts.setDebit_card_number(acc.getDebit_card_number());
+        accounts.setCredit_card_number(acc.getCredit_card_number());
         accounts.setBalance(acc.getBalance());
         accounts.setWallet(acc.getWallet());
 
@@ -120,7 +133,7 @@ public class Controller {
         Accounts acc = services.getAccounts(Integer.parseInt(accountView.getUserId()));
         Accounts accounts = new Accounts();
         accounts.setUser_id(Integer.parseInt((accountView.getUserId())));
-        accounts.setDebit_card_number(Integer.parseInt((accountView.getDebitCard())));
+        accounts.setCredit_card_number(((accountView.getCreditCard())));
         Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(accountView.getUserId()));
         Savings_Account savings_account = new Savings_Account();
         if (acc!=null && savingsAccount!=null){
@@ -160,7 +173,7 @@ public class Controller {
     public ResponseEntity loginUser(@RequestBody LoginView loginView) {
         Users user = services.login(loginView.getEmail(), loginView.getPassword());
         if (user!=null){
-            return new ResponseEntity(new UserView(user.getEmail(), user.getName(), user.getId(), user.getUsername()), HttpStatus.OK);
+            return new ResponseEntity(new UserView(user.getEmail(), user.getName(), user.getId(), user.getUsername(), user.getMobile_number()), HttpStatus.OK);
         }
         return new ResponseEntity(new ErrorView("Cannot validate user"), HttpStatus.FORBIDDEN);
 
@@ -237,6 +250,40 @@ public class Controller {
         }
     }
 
+    @GetMapping("/admin/update_status/{p_id}")
+    public String updateStatus(@PathVariable("p_id") int id){
+        Purchase purchase = services.getTransaction(String.valueOf(id));
+
+        Products products = services.getProducts(Integer.parseInt(purchase.getProduct_id()));
+        double finalPrice = ceil(Float.parseFloat(products.getProduct_price()));
+
+        double savingsBalance = (finalPrice - Float.parseFloat(products.getProduct_price()));
+
+        logger.error("final price "+ finalPrice);
+        logger.error("balance savings "+ Utils.round(savingsBalance, 2));
+
+
+        Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(purchase.getUser_id()));
+        Savings_Account savings_account = new Savings_Account();
+
+        if (Objects.equals(purchase.getStatus(), "0")){
+
+            logger.error("payment type 1");
+            savings_account.setSavings_balance(savingsAccount.getSavings_balance() + Utils.round(savingsBalance, 2));
+            savings_account.setUser_id(Integer.parseInt(purchase.getUser_id()));
+                if (services.updateSavingsAccount(savingsAccount.getId(), savings_account)){
+                    if (services.updatePurchaseStatus(id, "1")) {
+                        return "redirect:create?success=true";
+
+                    }
+                return "redirect:create?error=true";
+            }
+
+        }
+        return "redirect:create?error=true";
+
+    }
+
     @CrossOrigin(origins = "http://localhost:3001")
     @PostMapping("/purchase_product")
     public String makePurchase(@RequestBody PurchaseView purchaseView) {
@@ -245,18 +292,18 @@ public class Controller {
 
         Products products = services.getProducts(Integer.parseInt(purchaseView.getProductId()));
 
-        Double finalPrice = ceil(Double.parseDouble(products.getProduct_price()));
+        double finalPrice = ceil(Float.parseFloat(products.getProduct_price()));
 
-        Double savingsBalance = (finalPrice - Double.parseDouble(products.getProduct_price()));
+        double savingsBalance = (finalPrice - Float.parseFloat(products.getProduct_price()));
 
         logger.error("final price "+ finalPrice);
-        logger.error("balance savings "+ savingsBalance);
+        logger.error("balance savings "+ Utils.round(savingsBalance, 2));
 
         Accounts acc = services.getAccounts(Integer.parseInt(purchaseView.getUserId()));
 
         Accounts accounts = new Accounts();
         accounts.setUser_id(Integer.parseInt((purchaseView.getUserId())));
-        accounts.setDebit_card_number(acc.getDebit_card_number());
+        accounts.setCredit_card_number(acc.getCredit_card_number());
 
         Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(purchaseView.getUserId()));
         Savings_Account savings_account = new Savings_Account();
@@ -267,7 +314,7 @@ public class Controller {
 
             accounts.setBalance(acc.getBalance()-finalPrice);
             accounts.setWallet(acc.getWallet());
-            savings_account.setSavings_balance(savingsAccount.getSavings_balance() + savingsBalance);
+            savings_account.setSavings_balance(savingsAccount.getSavings_balance());
             savings_account.setUser_id(Integer.parseInt(purchaseView.getUserId()));
             if (services.updateAccount(acc.getId(), accounts)) {
                 Purchase purchase = new Purchase();
@@ -276,6 +323,7 @@ public class Controller {
                 purchase.setPayment_type(purchaseView.getPaymentType());
                 purchase.setProduct_price(String.valueOf(finalPrice));
                 purchase.setSavings_amount(String.valueOf(savingsBalance));
+                purchase.setStatus("0");
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();
 
@@ -303,6 +351,7 @@ public class Controller {
                 purchase.setUser_id(purchaseView.getUserId());
                 purchase.setPayment_type(purchaseView.getPaymentType());
                 purchase.setProduct_price(String.valueOf(finalPrice));
+                purchase.setStatus("1");
                 purchase.setSavings_amount(String.valueOf(savingsBalance));
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();

@@ -54,4 +54,17 @@ public class UserDao {
             return null;
         }
     }
+
+    public Users getUser(String email) {
+        try {
+            logger.info(email);
+            Users userMatch = (Users) conn.getEntityManager()
+                    .createQuery("from Users where email=:email AND password IS NOT NULL")
+                    .setParameter("email", email).getSingleResult();
+            return userMatch;
+        } catch (NoResultException e) {
+            logger.info("email not found");
+            return null;
+        }
+    }
 }

@@ -55,6 +55,8 @@ public class ProductDao {
         }
     }
 
+
+
     public List<Purchase> getPurchase(int user_id) {
         List<Purchase> purchases =  (List<Purchase>) conn.getEntityManager()
                 .createQuery("from Purchase").getResultList();
@@ -67,5 +69,33 @@ public class ProductDao {
             }
         }
         return dummyP;
+    }
+
+    public Purchase getPurchase(String user_id) {
+        List<Purchase> purchases =  (List<Purchase>) conn.getEntityManager()
+                .createQuery("from Purchase").getResultList();
+
+        for (int i =0;i<purchases.size(); i++){
+            if ((purchases.get(i).getId()) == Integer.parseInt(user_id)){
+                return purchases.get(i);
+            }
+        }
+        return null;
+    }
+
+    public void updatePurchaseStatus(int id, String status) throws  Exception{
+
+        try {
+            EntityTransaction txn = conn.getEntityManager().getTransaction();
+            txn.begin();
+            conn.getEntityManager()
+                    .createQuery("update Purchase set status=:status where id=:id")
+                    .setParameter("status", status).setParameter("id", id).executeUpdate();
+            txn.commit();
+        }catch (NoResultException e){
+
+            System.out.println("No result");
+            return;
+        }
     }
 }

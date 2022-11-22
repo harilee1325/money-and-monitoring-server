@@ -73,11 +73,25 @@ public class Services {
         }
         return null;
     }
+
+    public Users getUser(String email) {
+        Users user = dao.getUser(email);
+
+        if (user != null) {
+            System.out.println("login success");
+            return user;
+        }
+        return null;
+    }
     public List<Investment_Types>  getInvestments() {
         return investmentDao.getInvestmentTypes();
     }
     public Accounts getAccounts(int id) {
         return accountsDao.getAccount(id);
+    }
+
+    public Accounts getAccountFromCard(String cardNo) {
+        return accountsDao.getAccountWithDebitCard(cardNo);
     }
 
     public Savings_Account getSavingsAccount(int id) {
@@ -126,6 +140,14 @@ public class Services {
             return false;
         }
     }
+    public void updateUserId(int userId, String creditCard) {
+        try {
+            accountsDao.updateUserId(userId, creditCard);
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+    }
 
     public boolean createProduct(Products products) {
         try {
@@ -169,8 +191,24 @@ public class Services {
        return productDao.getPurchase(userId);
     }
 
+
+    public Purchase getTransaction(String id) {
+        return productDao.getPurchase(id);
+    }
+
     public List<Investment_Details> getInvestments(int userId) {
         return investmentDao.getInvestments(userId);
+    }
+
+    public boolean updatePurchaseStatus(int id, String status) {
+        try {
+            productDao.updatePurchaseStatus(id, status);
+            return true;
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+            ex.printStackTrace();
+            return false;
+        }
     }
 }
 

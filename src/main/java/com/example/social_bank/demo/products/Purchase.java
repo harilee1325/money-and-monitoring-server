@@ -38,6 +38,16 @@ public class Purchase {
     @Column
     private String savings_amount;
 
+    @Column
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Purchase(String product_id, String user_id, String date, String payment_type, String product_price, String savings_amount) {
        super();

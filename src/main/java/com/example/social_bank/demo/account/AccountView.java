@@ -9,22 +9,22 @@ public class AccountView {
 
     private String userId;
 
-    public String getDebitCard() {
-        return debitCard;
+    public String getCreditCard() {
+        return creditCard;
     }
 
-    public void setDebitCard(String debitCard) {
-        this.debitCard = debitCard;
+    public void setCreditCard(String creditCard) {
+        this.creditCard = creditCard;
     }
 
-    private String debitCard;
+    private String creditCard;
 
-    public AccountView(String balance, String wallet, String savings, String userId, String debitCard) {
+    public AccountView(String balance, String wallet, String savings, String userId, String creditCard) {
         this.balance = balance;
         this.wallet = wallet;
         this.savings = savings;
         this.userId = userId;
-        this.debitCard = debitCard;
+        this.creditCard = creditCard;
     }
 
     public AccountView() {

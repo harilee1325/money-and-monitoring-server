@@ -28,7 +28,7 @@ public class Accounts {
     private int user_id;
 
     @Column()
-    private int debit_card_number;
+    private String credit_card_number;
 
     public Accounts() {
 
@@ -60,11 +60,11 @@ public class Accounts {
         this.user_id = user_id;
     }
 
-    public int getDebit_card_number() {
-        return debit_card_number;
+    public String getCredit_card_number() {
+        return credit_card_number;
     }
 
-    public void setDebit_card_number(int debit_card_number) {
-        this.debit_card_number = debit_card_number;
+    public void setCredit_card_number(String credit_card_number) {
+        this.credit_card_number = credit_card_number;
     }
 }
