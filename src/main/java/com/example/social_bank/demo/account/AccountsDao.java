@@ -28,6 +28,14 @@ public class AccountsDao {
         return "done";
     }
 
+    public String createSavings(Savings_Account e) {
+        EntityTransaction txn = conn.getEntityManager().getTransaction();
+        txn.begin();
+        conn.getEntityManager().persist(e);
+        txn.commit();
+        return "done";
+    }
+
     public Accounts getAccount(int user_id) {
 
         try {
@@ -41,7 +49,29 @@ public class AccountsDao {
 
     }
 
+    public Savings_Account getSavingsAccount(int user_id) {
+
+        try {
+            Savings_Account accounts = (Savings_Account) conn.getEntityManager()
+                    .createQuery("from Savings_Account where user_id=:user_id")
+                    .setParameter("user_id", user_id).getSingleResult();
+            return accounts;
+        }catch (NoResultException noResultException){
+            return null;
+        }
+
+    }
+
     public void updateAccount(Long id, Accounts e) throws Exception {
+        EntityTransaction txn = conn.getEntityManager().getTransaction();
+        txn.begin();
+        e.setId(id);
+        conn.getEntityManager().merge(e);
+        conn.getEntityManager().flush();
+        txn.commit();
+    }
+
+    public void updateSavingsAccount(int id, Savings_Account e) throws Exception {
         EntityTransaction txn = conn.getEntityManager().getTransaction();
         txn.begin();
         e.setId(id);

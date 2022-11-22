@@ -2,6 +2,7 @@ package com.example.social_bank.demo;
 
 import com.example.social_bank.demo.account.Accounts;
 import com.example.social_bank.demo.account.AccountsDao;
+import com.example.social_bank.demo.account.Savings_Account;
 import com.example.social_bank.demo.investment.InvestmentDao;
 import com.example.social_bank.demo.investment.Investment_Details;
 import com.example.social_bank.demo.investment.Investment_Types;
@@ -78,6 +79,10 @@ public class Services {
     public Accounts getAccounts(int id) {
         return accountsDao.getAccount(id);
     }
+
+    public Savings_Account getSavingsAccount(int id) {
+        return accountsDao.getSavingsAccount(id);
+    }
     public boolean createAccount(Accounts accounts) {
         try {
             accountsDao.createAccount(accounts);
@@ -89,9 +94,31 @@ public class Services {
         }
     }
 
+    public boolean createSavingsAccount(Savings_Account accounts) {
+        try {
+            accountsDao.createSavings(accounts);
+            return true;
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean updateAccount(Long id, Accounts accounts) {
         try {
             accountsDao.updateAccount(id, accounts);
+            return true;
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateSavingsAccount(int id, Savings_Account accounts) {
+        try {
+            accountsDao.updateSavingsAccount(id, accounts);
             return true;
         } catch (Exception ex) {
             logger.error(ex.getLocalizedMessage());

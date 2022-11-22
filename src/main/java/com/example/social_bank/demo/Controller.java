@@ -3,6 +3,7 @@ package com.example.social_bank.demo;
 
 import com.example.social_bank.demo.account.AccountView;
 import com.example.social_bank.demo.account.Accounts;
+import com.example.social_bank.demo.account.Savings_Account;
 import com.example.social_bank.demo.investment.InvestmentDao;
 import com.example.social_bank.demo.investment.Investment_Details;
 import com.example.social_bank.demo.investment.Investment_Types;
@@ -87,16 +88,23 @@ public class Controller {
 
         Accounts accounts = new Accounts();
         accounts.setUser_id(Integer.parseInt((investmentView.getUserId())));
-        accounts.setSavings_balance(acc.getSavings_balance() - Double.parseDouble(investmentView.getAmount()));
         accounts.setDebit_card_number(acc.getDebit_card_number());
         accounts.setBalance(acc.getBalance());
         accounts.setWallet(acc.getWallet());
 
 
+        Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(investmentView.getUserId()));
+        Savings_Account savings_account = new Savings_Account();
+        savings_account.setSavings_balance(savingsAccount.getSavings_balance() - Double.parseDouble(investmentView.getAmount()));
+        savings_account.setUser_id(Integer.parseInt(investmentView.getUserId()));
+
 
         if (services.createInvestment(investmentDetails)) {
             if (services.updateAccount(acc.getId(), accounts)) {
-                return "redirect:create?success=true";
+
+                if (services.updateSavingsAccount(savingsAccount.getId(), savings_account)){
+                    return "redirect:create?success=true";
+                }
             }
             return "redirect:create?error=true";
         }
@@ -113,21 +121,33 @@ public class Controller {
         Accounts accounts = new Accounts();
         accounts.setUser_id(Integer.parseInt((accountView.getUserId())));
         accounts.setDebit_card_number(Integer.parseInt((accountView.getDebitCard())));
-
-        if (acc!=null){
+        Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(accountView.getUserId()));
+        Savings_Account savings_account = new Savings_Account();
+        if (acc!=null && savingsAccount!=null){
             accounts.setBalance(acc.getBalance()+Double.parseDouble(accountView.getBalance()));
             accounts.setWallet(acc.getWallet()+Double.parseDouble(accountView.getWallet()));
-            accounts.setSavings_balance(acc.getSavings_balance()+Double.parseDouble(accountView.getSavings()));
+
+
+            savings_account.setSavings_balance(savingsAccount.getSavings_balance() + Double.parseDouble(accountView.getSavings()));
+            savings_account.setUser_id(Integer.parseInt(accountView.getUserId()));
+
             if (services.updateAccount(acc.getId(), accounts)) {
-                return "redirect:create?success=true";
+
+                if (services.updateSavingsAccount(savingsAccount.getId(), savings_account)){
+                    return "redirect:create?success=true";
+                }
             }
             return "redirect:create?error=true";
         }
         accounts.setBalance(Double.valueOf(accountView.getBalance()));
         accounts.setWallet(Double.valueOf(accountView.getWallet()));
-        accounts.setSavings_balance(Double.valueOf(accountView.getSavings()));
+        savings_account.setSavings_balance(Double.parseDouble(accountView.getSavings()));
+        savings_account.setUser_id(Integer.parseInt(accountView.getUserId()));
+
         if (services.createAccount(accounts)) {
-            return "redirect:create?success=true";
+            if (services.createSavingsAccount(savings_account)){
+                return "redirect:create?success=true";
+            }
         }
         return "redirect:create?error=true";
     }
@@ -209,7 +229,7 @@ public class Controller {
 
             Accounts acc = services.getAccounts((id));
 
-            return new ResponseEntity(new AccountView(String.valueOf(acc.getBalance()), String.valueOf(acc.getWallet()), String.valueOf(acc.getSavings_balance()), String.valueOf(acc.getUser_id()), String.valueOf(acc.getDebit_card_number())), HttpStatus.OK);
+            return new ResponseEntity(acc, HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity(new ErrorView("Error"), HttpStatus.FORBIDDEN);
         }
@@ -236,14 +256,17 @@ public class Controller {
         accounts.setUser_id(Integer.parseInt((purchaseView.getUserId())));
         accounts.setDebit_card_number(acc.getDebit_card_number());
 
+        Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(purchaseView.getUserId()));
+        Savings_Account savings_account = new Savings_Account();
+
         if (Objects.equals(purchaseView.getPaymentType(), "1")){
 
             logger.error("payment type 1");
 
             accounts.setBalance(acc.getBalance()-finalPrice);
             accounts.setWallet(acc.getWallet());
-            accounts.setSavings_balance(acc.getSavings_balance()+savingsBalance);
-
+            savings_account.setSavings_balance(savingsAccount.getSavings_balance() + savingsBalance);
+            savings_account.setUser_id(Integer.parseInt(purchaseView.getUserId()));
             if (services.updateAccount(acc.getId(), accounts)) {
                 Purchase purchase = new Purchase();
                 purchase.setProduct_id(purchaseView.getProductId());
@@ -257,6 +280,7 @@ public class Controller {
                 String date = dtf.format(now);
                 purchase.setDate(date);
 
+                services.updateSavingsAccount(savingsAccount.getId(), savings_account);
                 if (services.makePurchase(purchase)) {
                     return "redirect:create?success=true";
                 }
@@ -268,7 +292,8 @@ public class Controller {
             logger.error("payment type 2");
             accounts.setBalance(acc.getBalance());
             accounts.setWallet(acc.getWallet()-finalPrice);
-            accounts.setSavings_balance(acc.getSavings_balance());
+            savings_account.setSavings_balance(savingsAccount.getSavings_balance());
+            savings_account.setUser_id(Integer.parseInt(purchaseView.getUserId()));
 
             if (services.updateAccount(acc.getId(), accounts)) {
                 Purchase purchase = new Purchase();
@@ -282,6 +307,8 @@ public class Controller {
 
                 String date = dtf.format(now);
                 purchase.setDate(date);
+                services.updateSavingsAccount(savingsAccount.getId(), savings_account);
+
                 if (services.makePurchase(purchase)) {
                     return "redirect:create?success=true";
                 }

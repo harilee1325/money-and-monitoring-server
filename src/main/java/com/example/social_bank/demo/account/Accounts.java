@@ -25,9 +25,6 @@ public class Accounts {
     private Double wallet;
 
     @Column()
-    private Double savings_balance;
-
-    @Column()
     private int user_id;
 
     @Column()
@@ -45,14 +42,7 @@ public class Accounts {
         this.balance = balance;
     }
 
-    public Accounts(Double balance, Double wallet, Double savings_balance, int user_id, int debit_card_number) {
-        super();
-        this.balance = balance;
-        this.wallet = wallet;
-        this.savings_balance = savings_balance;
-        this.user_id = user_id;
-        this.debit_card_number = debit_card_number;
-    }
+
 
     public Double getWallet() {
         return wallet;
@@ -60,14 +50,6 @@ public class Accounts {
 
     public void setWallet(Double wallet) {
         this.wallet = wallet;
-    }
-
-    public Double getSavings_balance() {
-        return savings_balance;
-    }
-
-    public void setSavings_balance(Double savings_balance) {
-        this.savings_balance = savings_balance;
     }
 
     public int getUser_id() {
