@@ -280,6 +280,8 @@ public class Controller {
         Products products = services.getProducts(Integer.parseInt(purchase.getProduct_id()));
         double finalPrice = ceil(Float.parseFloat(products.getProduct_price()));
 
+        double finalWallet = ceil(finalPrice * .05);
+
         double savingsBalance = (finalPrice - Float.parseFloat(products.getProduct_price()));
 
         logger.error("final price "+ finalPrice);
@@ -290,11 +292,19 @@ public class Controller {
         Savings_Account savings_account = new Savings_Account();
 
         if (Objects.equals(purchase.getStatus(), "0")){
+            Accounts acc = services.getAccounts(Integer.parseInt(purchase.getUser_id()));
+
+            Accounts accounts = new Accounts();
+            accounts.setUser_id(Integer.parseInt((purchase.getUser_id())));
+            accounts.setCredit_card_number(acc.getCredit_card_number());
+            accounts.setBalance(acc.getBalance());
+            accounts.setWallet(acc.getWallet()+finalWallet);
 
             logger.error("payment type 1");
             savings_account.setSavings_balance(savingsAccount.getSavings_balance() + Utils.round(savingsBalance, 2));
             savings_account.setUser_id(Integer.parseInt(purchase.getUser_id()));
-                if (services.updateSavingsAccount(savingsAccount.getId(), savings_account)){
+                if (services.updateSavingsAccount(savingsAccount.getId(), savings_account)
+                && services.updateAccount(acc.getId(), accounts)){
                     if (services.updatePurchaseStatus(id, "1")) {
                         return "redirect:create?success=true";
 
