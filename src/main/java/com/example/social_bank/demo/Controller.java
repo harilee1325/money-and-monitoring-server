@@ -72,12 +72,11 @@ public class Controller {
             if (services.createEmployee(emp)) {
                 Users users = services.getUser(userView.getEmail());
                 services.updateUserId(users.getId(), userView.getCreditCard() );
-                return new ResponseEntity(new ErrorView("Account updated"), HttpStatus.CREATED);
+                return new ResponseEntity(new ErrorView("Account created"), HttpStatus.CREATED);
             }
         }else{
-            if (services.createEmployee(emp)) {
-                return new ResponseEntity(new ErrorView("Success"), HttpStatus.CREATED);
-            }
+            return new ResponseEntity(new ErrorView("User does not exist"), HttpStatus.UNAUTHORIZED);
+
         }
 
         return new ResponseEntity(new ErrorView("Error"), HttpStatus.UNAUTHORIZED);
