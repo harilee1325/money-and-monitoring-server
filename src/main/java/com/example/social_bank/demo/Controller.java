@@ -213,6 +213,7 @@ public class Controller {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3001")
     @GetMapping("/all_transaction/{user_id}")
     public ResponseEntity getAllTransactions(@PathVariable("user_id") int userId) {
         try{
@@ -223,6 +224,7 @@ public class Controller {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3001")
     @GetMapping("/get_account/{user_id}")
     public ResponseEntity getSpecificAccount(@PathVariable("user_id") int id) {
         try{
