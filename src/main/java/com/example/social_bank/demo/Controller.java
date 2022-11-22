@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -80,6 +81,21 @@ public class Controller {
         }
 
         return new ResponseEntity(new ErrorView("Error"), HttpStatus.UNAUTHORIZED);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3001")
+
+    @GetMapping("/get_savings/{id}")
+    public ResponseEntity getSavings(@PathVariable("id") int id){
+        Savings_Account savingsAccount = services.getSavingsAccount(id);
+        if (savingsAccount!=null){
+            return new ResponseEntity(savingsAccount, HttpStatus.OK);
+
+        }
+
+        return new ResponseEntity(new ErrorView("Error"), HttpStatus.UNAUTHORIZED);
+
+
     }
 
     @CrossOrigin(origins = "http://localhost:3001")
