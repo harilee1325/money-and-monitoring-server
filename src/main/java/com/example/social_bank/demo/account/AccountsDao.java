@@ -85,7 +85,7 @@ public class AccountsDao {
         txn.commit();
     }
 
-    public void updateSavingsAccount(int id, Savings_Account e) throws Exception {
+    public void updateSavingsAccount(Long id, Savings_Account e) throws Exception {
         EntityTransaction txn = conn.getEntityManager().getTransaction();
         txn.begin();
         e.setId(id);

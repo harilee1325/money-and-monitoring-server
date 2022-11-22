@@ -15,6 +15,16 @@ public class UserView {
 
     private String creditCard;
 
+    private String accNo;
+
+    public String getAccNo() {
+        return accNo;
+    }
+
+    public void setAccNo(String accNo) {
+        this.accNo = accNo;
+    }
+
     public String getCreditCard() {
         return creditCard;
     }

@@ -69,10 +69,18 @@ public class Controller {
         emp.setUsername(userView.getUsername());
         Accounts accounts = services.getAccountFromCard(userView.getCreditCard());
 
+
+
         if (accounts!=null){
             if (services.createEmployee(emp)) {
                 Users users = services.getUser(userView.getEmail());
                 services.updateUserId(users.getId(), userView.getCreditCard() );
+
+                Savings_Account savings_account = new Savings_Account();
+                savings_account.setId(Long.valueOf(userView.getAccNo()));
+                savings_account.setSavings_balance(Double.valueOf("0.0"));
+                savings_account.setUser_id(users.getId());
+                services.createSavingsAccount(savings_account);
                 return new ResponseEntity(new ErrorView("Account created"), HttpStatus.CREATED);
             }
         }else{

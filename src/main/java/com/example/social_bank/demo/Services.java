@@ -130,7 +130,7 @@ public class Services {
         }
     }
 
-    public boolean updateSavingsAccount(int id, Savings_Account accounts) {
+    public boolean updateSavingsAccount(Long id, Savings_Account accounts) {
         try {
             accountsDao.updateSavingsAccount(id, accounts);
             return true;
