@@ -68,11 +68,11 @@ public class Controller {
         services.createAccount(accounts1);
 
         Products products = new Products();
-        products.setProduct_name("Item 1");
+        products.setProduct_name("Mobile Phone");
         products.setProduct_price("15.55");
 
         Products products1 = new Products();
-        products1.setProduct_name("Item 2");
+        products1.setProduct_name("Camera");
         products1.setProduct_price("25.55");
 
 
