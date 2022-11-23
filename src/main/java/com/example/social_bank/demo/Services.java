@@ -183,6 +183,17 @@ public class Services {
         }
     }
 
+    public boolean createInvestmentTypes(Investment_Types accounts) {
+        try {
+            investmentDao.createInvestmentTypes(accounts);
+            return true;
+        } catch (Exception ex) {
+            logger.error(ex.getLocalizedMessage());
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     public Products getProducts(int id) {
         return productDao.getProducts(id);
     }

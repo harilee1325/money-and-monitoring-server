@@ -49,8 +49,57 @@ public class Controller {
     @Autowired
     InvestmentDao investmentDao;
 
-    @GetMapping("/add")
+    @GetMapping("/")
     public String add(){
+
+        Accounts accounts = new Accounts();
+        accounts.setUser_id(-1);
+        accounts.setCredit_card_number("1122334455");
+        accounts.setBalance(1000.00);
+        accounts.setWallet(1000.00);
+
+        Accounts accounts1 = new Accounts();
+        accounts1.setUser_id(-1);
+        accounts1.setCredit_card_number("1122334466");
+        accounts1.setBalance(1000.00);
+        accounts1.setWallet(1000.00);
+
+        services.createAccount(accounts);
+        services.createAccount(accounts1);
+
+        Products products = new Products();
+        products.setProduct_name("Item 1");
+        products.setProduct_price("15.55");
+
+        Products products1 = new Products();
+        products1.setProduct_name("Item 2");
+        products1.setProduct_price("25.55");
+
+
+        services.createProduct(products);
+        services.createProduct(products1);
+
+        Investment_Types investmentTypes = new Investment_Types();
+
+        investmentTypes.setInvestment_desc("Lore ipsum");
+        investmentTypes.setInvestment_name("Mutual Funds");
+        investmentTypes.setInvestment_type("MF");
+        investmentTypes.setInvestment_percent("10%");
+
+
+        Investment_Types investmentTypes1 = new Investment_Types();
+
+        investmentTypes1.setInvestment_desc("Lore ipsum");
+        investmentTypes1.setInvestment_name("Bonds");
+        investmentTypes1.setInvestment_type("B");
+        investmentTypes1.setInvestment_percent("12%");
+
+        services.createInvestmentTypes(investmentTypes1);
+        services.createInvestmentTypes(investmentTypes);
+
+
+
+
         return "success";
 
     }
@@ -307,7 +356,6 @@ public class Controller {
                 && services.updateAccount(acc.getId(), accounts)){
                     if (services.updatePurchaseStatus(id, "1")) {
                         return "redirect:create?success=true";
-
                     }
                 return "redirect:create?error=true";
             }

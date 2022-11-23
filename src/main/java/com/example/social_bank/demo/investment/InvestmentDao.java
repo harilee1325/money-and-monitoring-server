@@ -33,6 +33,14 @@ public class InvestmentDao {
         return "done";
     }
 
+    public String createInvestmentTypes(Investment_Types e) {
+        EntityTransaction txn = conn.getEntityManager().getTransaction();
+        txn.begin();
+        conn.getEntityManager().persist(e);
+        txn.commit();
+        return "done";
+    }
+
     public List<Investment_Details> getInvestments(int userId) {
         List<Investment_Details> investmentTypes = (List<Investment_Details>) conn.getEntityManager().createQuery("from Investment_Details").getResultList();
 
