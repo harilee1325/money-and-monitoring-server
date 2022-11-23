@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.transaction.Transaction;
+import java.util.List;
 
 @Component("accountDao")
 
@@ -40,10 +41,14 @@ public class AccountsDao {
     public Accounts getAccount(int user_id) {
 
         try {
-            Accounts accounts = (Accounts) conn.getEntityManager()
-                    .createQuery("from Accounts where user_id=:user_id")
-                    .setParameter("user_id", user_id).getSingleResult();
-            return accounts;
+            List<Accounts> accounts = (List<Accounts>) conn.getEntityManager()
+                    .createQuery("from Accounts where").getResultList();
+            for (int i=0;i<accounts.size();i++){
+                if (accounts.get(i).getUser_id() == user_id){
+                    return accounts.get(i);
+                }
+            }
+            return null;
         }catch (NoResultException noResultException){
             return null;
         }
@@ -63,13 +68,19 @@ public class AccountsDao {
 
     }
 
-    public Savings_Account getSavingsAccount(int user_id) {
+    public  Savings_Account getSavingsAccount(int user_id) {
 
         try {
-            Savings_Account accounts = (Savings_Account) conn.getEntityManager()
-                    .createQuery("from Savings_Account where user_id=:user_id")
-                    .setParameter("user_id", user_id).getSingleResult();
-            return accounts;
+            List<Savings_Account> accounts = ( List<Savings_Account>) conn.getEntityManager()
+                    .createQuery("from Savings_Account").getResultList();
+
+            for (int i=0;i<accounts.size();i++){
+                if (accounts.get(i).getUser_id() == user_id){
+                    return accounts.get(i);
+                }
+            }
+            return null;
+
         }catch (NoResultException noResultException){
             return null;
         }
