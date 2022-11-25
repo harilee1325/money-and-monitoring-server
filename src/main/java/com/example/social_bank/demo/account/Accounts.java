@@ -30,6 +30,18 @@ public class Accounts {
     @Column()
     private String credit_card_number;
 
+
+    @Column()
+    private String limit;
+
+    public String getLimit() {
+        return limit;
+    }
+
+    public void setLimit(String limit) {
+        this.limit = limit;
+    }
+
     public Accounts() {
 
     }
