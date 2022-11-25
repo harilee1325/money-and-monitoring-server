@@ -56,14 +56,12 @@ public class Controller {
         accounts.setCredit_card_number("1122334455");
         accounts.setBalance(1000.00);
         accounts.setWallet(1000.00);
-        accounts.setLimit("100000");
 
         Accounts accounts1 = new Accounts();
         accounts1.setUser_id(-1);
         accounts1.setCredit_card_number("1122334466");
         accounts1.setBalance(1000.00);
         accounts1.setWallet(1000.00);
-        accounts1.setLimit("100000");
 
         services.createAccount(accounts);
         services.createAccount(accounts1);
@@ -177,7 +175,6 @@ public class Controller {
         accounts.setCredit_card_number(acc.getCredit_card_number());
         accounts.setBalance(acc.getBalance());
         accounts.setWallet(acc.getWallet());
-        accounts.setLimit(acc.getLimit());
 
 
         Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(investmentView.getUserId()));
@@ -366,7 +363,6 @@ public class Controller {
             accounts.setCredit_card_number(acc.getCredit_card_number());
             accounts.setBalance(acc.getBalance());
             accounts.setWallet(acc.getWallet()+finalWallet);
-            accounts.setLimit(acc.getLimit());
 
             logger.error("payment type 1");
             savings_account.setSavings_balance(Utils.round((savingsAccount.getSavings_balance() + Utils.round(savingsBalance, 2)), 2));
@@ -408,7 +404,6 @@ public class Controller {
             Accounts accounts = new Accounts();
             accounts.setUser_id(Integer.parseInt((purchaseView.getUserId())));
             accounts.setCredit_card_number(acc.getCredit_card_number());
-            accounts.setLimit(acc.getLimit());
 
             Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(purchaseView.getUserId()));
             Savings_Account savings_account = new Savings_Account();
@@ -452,7 +447,6 @@ public class Controller {
             Accounts accounts = new Accounts();
             accounts.setUser_id(Integer.parseInt((purchaseView.getUserId())));
             accounts.setCredit_card_number(acc.getCredit_card_number());
-            accounts.setLimit(acc.getLimit());
 
             Savings_Account savingsAccount = services.getSavingsAccount(Integer.parseInt(purchaseView.getUserId()));
             Savings_Account savings_account = new Savings_Account();

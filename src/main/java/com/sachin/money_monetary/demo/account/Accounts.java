@@ -31,17 +31,6 @@ public class Accounts {
     private String debit_card_number;
 
 
-    @Column()
-    private String limit;
-
-    public String getLimit() {
-        return limit;
-    }
-
-    public void setLimit(String limit) {
-        this.limit = limit;
-    }
-
     public Accounts() {
 
     }
